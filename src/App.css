@@ -1,0 +1,350 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.App {
+  text-align: center;
+  min-height: 100vh;
+  position: relative;
+  animation: fadeIn 0.6s ease-out;
+  overflow-x: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+/* Smooth scroll for sections */
+section {
+  scroll-behavior: smooth;
+}
+
+/* Loading states */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.loading::after {
+  content: '';
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #20a59e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Global hover effects */
+.hover-scale {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* Micro-interactions */
+.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clickable:active {
+  transform: scale(0.98);
+}
+
+/* Skeleton loading animation */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background-color: #eee;
+  background-image: linear-gradient(
+    90deg,
+    #eee,
+    #f5f5f5,
+    #eee
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading 1.2s ease-in-out infinite;
+}
+
+/* Smooth transitions for all interactive elements */
+button, a, input, textarea, select {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid #20a59e;
+  outline-offset: 2px;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== 전체 모바일 최적화 ===== */
+
+/* 모바일 기본 설정 */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* 스크롤바 스타일링 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* 모바일 터치 스크롤 최적화 */
+@media (max-width: 768px) {
+  body {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+  }
+  
+  /* 스크롤바 숨기기 (모바일) */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+/* 세이프 에어리어 대응 (iPhone X 이상) */
+@supports (padding: env(safe-area-inset-top)) {
+  .App {
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* 가로 모드 대응 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .custom-header {
+    padding: 8px 20px;
+  }
+  
+  .header-logo {
+    height: 30px;
+  }
+}
+
+/* 터치 디바이스 최적화 */
+@media (hover: none) and (pointer: coarse) {
+  /* 터치 디바이스에서 hover 효과 제거 */
+  .hover-scale:hover,
+  .hover-lift:hover {
+    transform: none;
+  }
+  
+  /* 터치 피드백 */
+  button,
+  a,
+  .clickable {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  button:active,
+  a:active,
+  .clickable:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+}
+
+/* 작은 화면 공통 스타일 */
+@media (max-width: 768px) {
+  /* 폰트 크기 조정 */
+  html {
+    font-size: 14px;
+  }
+  
+  /* 패딩/마진 조정 */
+  section {
+    padding: 20px 10px;
+  }
+  
+  /* 버튼 최소 크기 보장 */
+  button,
+  a,
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 16px;
+  }
+  
+  /* 입력 필드 최적화 */
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* iOS 줌 방지 */
+    padding: 12px;
+    border-radius: 8px;
+  }
+  
+  /* 카드 레이아웃 */
+  .card,
+  [class*="card"] {
+    margin: 10px;
+    padding: 15px;
+  }
+  
+  /* 모달/오버레이 */
+  .modal,
+  [class*="modal"],
+  [class*="overlay"] {
+    padding: 20px;
+  }
+}
+
+/* 아주 작은 화면 */
+@media (max-width: 360px) {
+  html {
+    font-size: 13px;
+  }
+  
+  .App {
+    padding: 0;
+  }
+  
+  section {
+    padding: 15px 8px;
+  }
+}
+
+/* 프린트 스타일 */
+@media print {
+  .custom-header,
+  .mobile-nav,
+  .mobile-menu-overlay,
+  button,
+  .footer {
+    display: none !important;
+  }
+  
+  .App {
+    padding: 0;
+  }
+  
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}

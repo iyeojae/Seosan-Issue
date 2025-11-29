@@ -1,0 +1,279 @@
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #C1E3DF 0%, #FFFFFF 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.login-container {
+  background: #FFFFFF;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  padding: 60px;
+  width: 100%;
+  max-width: 500px;
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 헤더 */
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #666;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  background: #F5F5F5;
+  color: #3DC5B6;
+}
+
+.login-title {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #1E1E1E;
+  margin-bottom: 12px;
+}
+
+.login-subtitle {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+/* 폼 */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 16px;
+  border: 1px solid #E0E0E0;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  border-color: #3DC5B6;
+  box-shadow: 0 0 0 3px rgba(61, 197, 182, 0.1);
+}
+
+.form-input.input-error {
+  border-color: #FF6B6B;
+}
+
+.form-input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+}
+
+.form-input:disabled {
+  background: #F5F5F5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 13px;
+  color: #FF6B6B;
+  margin-top: 4px;
+}
+
+/* 폼 옵션 */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -8px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #3DC5B6;
+}
+
+.forgot-password {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 14px;
+  color: #3DC5B6;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #35B0A3;
+  text-decoration: underline;
+}
+
+/* 제출 버튼 */
+.submit-button {
+  width: 100%;
+  height: 56px;
+  background: #3DC5B6;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #35B0A3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(61, 197, 182, 0.4);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  background: #C1C1C1;
+  cursor: not-allowed;
+}
+
+/* 푸터 */
+.login-footer {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.login-footer p {
+  font-family: 'Pretendard', sans-serif;
+  font-size: 15px;
+  color: #666;
+  margin: 0;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: #3DC5B6;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+
+.link-button:hover:not(:disabled) {
+  color: #35B0A3;
+}
+
+.link-button:disabled {
+  color: #C1C1C1;
+  cursor: not-allowed;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 40px 30px;
+    border-radius: 20px;
+  }
+
+  .login-title {
+    font-size: 28px;
+  }
+
+  .login-subtitle {
+    font-size: 14px;
+  }
+
+  .form-input {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .submit-button {
+    height: 52px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 20px;
+  }
+
+  .login-container {
+    padding: 30px 20px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .form-options {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}
+

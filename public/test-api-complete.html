@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서산 이슈 - API 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .api-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .api-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .test-group {
+            margin-bottom: 15px;
+        }
+
+        .test-group h3 {
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .result.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .result.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+
+        .clear-btn {
+            background: #6c757d;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 서산 이슈 API 테스트 페이지</h1>
+
+        <!-- 게시글 API -->
+        <div class="api-section">
+            <h2>📝 게시글 API (/api/posts)</h2>
+            <div class="test-group">
+                <h3>카테고리별 조회</h3>
+                <button onclick="testAPI('/api/posts?category=WELFARE_SENIOR&page=0&size=5', 'posts-category')">복지-어르신</button>
+                <button onclick="testAPI('/api/posts?category=NOTICE&page=0&size=5', 'posts-category')">공지사항</button>
+                <button onclick="testAPI('/api/posts?category=CULTURE_NEWS&page=0&size=5', 'posts-category')">문화소식</button>
+                <button class="clear-btn" onclick="clearResult('posts-category')">결과 지우기</button>
+                <div id="posts-category"></div>
+            </div>
+
+            <div class="test-group">
+                <h3>지역별 조회</h3>
+                <button onclick="testAPI('/api/posts?region=대산읍&page=0&size=5', 'posts-region')">대산읍</button>
+                <button onclick="testAPI('/api/posts?region=해미면&page=0&size=5', 'posts-region')">해미면</button>
+                <button onclick="testAPI('/api/posts?region=서산시 전체&page=0&size=5', 'posts-region')">서산시 전체</button>
+                <button class="clear-btn" onclick="clearResult('posts-region')">결과 지우기</button>
+                <div id="posts-region"></div>
+            </div>
+        </div>
+
+        <!-- 날씨 API -->
+        <div class="api-section">
+            <h2>🌤️ 날씨 API (/api/v1/weather)</h2>
+            <div class="test-group">
+                <h3>지역별 날씨 (초단기실황)</h3>
+                <button onclick="testAPI('/api/v1/weather/ncst?region=대산읍', 'weather')">대산읍</button>
+                <button onclick="testAPI('/api/v1/weather/ncst?region=해미면', 'weather')">해미면</button>
+                <button onclick="testAPI('/api/v1/weather/ncst?city=서산시', 'weather')">서산시 전체</button>
+                <button class="clear-btn" onclick="clearResult('weather')">결과 지우기</button>
+                <div id="weather"></div>
+            </div>
+
+            <div class="test-group">
+                <h3>날씨 예보 (초단기예보)</h3>
+                <button onclick="testAPI('/api/v1/weather/fcst?region=대산읍', 'weather-fcst')">대산읍 예보</button>
+                <button onclick="testAPI('/api/v1/weather/fcst?region=해미면', 'weather-fcst')">해미면 예보</button>
+                <button class="clear-btn" onclick="clearResult('weather-fcst')">결과 지우기</button>
+                <div id="weather-fcst"></div>
+            </div>
+        </div>
+
+        <!-- 네이버 검색 API -->
+        <div class="api-section">
+            <h2>🔍 네이버 검색 API (/api/v1/explore)</h2>
+            <div class="test-group">
+                <h3>통합 검색</h3>
+                <button onclick="testAPI('/api/v1/explore/naver?q=서산시&types=news&display=3', 'naver-search')">뉴스</button>
+                <button onclick="testAPI('/api/v1/explore/naver?q=서산시&types=blog&display=3', 'naver-search')">블로그</button>
+                <button onclick="testAPI('/api/v1/explore/naver?q=서산시&types=cafearticle&display=3', 'naver-search')">카페</button>
+                <button onclick="testAPI('/api/v1/explore/naver?q=서산시&types=news,blog,cafearticle&display=2', 'naver-search')">통합</button>
+                <button class="clear-btn" onclick="clearResult('naver-search')">결과 지우기</button>
+                <div id="naver-search"></div>
+            </div>
+        </div>
+
+        <!-- AI 검색 API -->
+        <div class="api-section">
+            <h2>🤖 AI 검색 API (/api/v1/ai-search)</h2>
+            <div class="test-group">
+                <h3>AI 검색 (One-Shot)</h3>
+                <button onclick="testAISearch('서산시 최근 이슈는?', 'ai-search')">서산시 이슈</button>
+                <button onclick="testAISearch('대산읍 복지 정보', 'ai-search')">대산읍 복지</button>
+                <button onclick="testAISearch('서산시 날씨', 'ai-search')">서산시 날씨</button>
+                <button class="clear-btn" onclick="clearResult('ai-search')">결과 지우기</button>
+                <div id="ai-search"></div>
+            </div>
+
+            <div class="test-group">
+                <h3>AI 상세 검색 (Map-Reduce)</h3>
+                <button onclick="testAISearchDetail('서산시 교통 정보', 'ai-detail')">교통 정보</button>
+                <button onclick="testAISearchDetail('서산시 문화 행사', 'ai-detail')">문화 행사</button>
+                <button class="clear-btn" onclick="clearResult('ai-detail')">결과 지우기</button>
+                <div id="ai-detail"></div>
+            </div>
+        </div>
+
+        <!-- Flask API -->
+        <div class="api-section">
+            <h2>🐍 Flask API (/flask)</h2>
+            <div class="test-group">
+                <h3>크롤러 & 통계</h3>
+                <button onclick="testAPI('/flask/content_stats', 'flask')">콘텐츠 통계</button>
+                <button onclick="testAPI('/flask/crawl_popular_terms', 'flask')">인기 검색어</button>
+                <button class="clear-btn" onclick="clearResult('flask')">결과 지우기</button>
+                <div id="flask"></div>
+            </div>
+
+            <div class="test-group">
+                <h3>텍스트 요약 (BART)</h3>
+                <button onclick="testSummarize('flask-summarize')">샘플 텍스트 요약</button>
+                <button class="clear-btn" onclick="clearResult('flask-summarize')">결과 지우기</button>
+                <div id="flask-summarize"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testAPI(url, resultId) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.innerHTML = '<div class="result">⏳ 요청 중...</div>';
+
+            const startTime = Date.now();
+
+            try {
+                console.log('🔵 API 요청:', url);
+                const response = await fetch(url);
+                const responseTime = Date.now() - startTime;
+
+                const contentType = response.headers.get('content-type');
+                console.log('📥 응답:', response.status, contentType);
+
+                let data;
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    const text = await response.text();
+                    data = { error: 'JSON이 아닌 응답', contentType, preview: text.substring(0, 200) };
+                }
+
+                const statusClass = response.ok ? 'success' : 'error';
+                const statusText = response.ok ? '✅ 성공' : '❌ 실패';
+
+                resultDiv.innerHTML = `
+                    <div class="result ${statusClass}">
+                        <strong>${url}</strong>
+                        <span class="status ${statusClass}">${response.status} ${response.statusText}</span>
+                        <span class="status success">${responseTime}ms</span>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        ${JSON.stringify(data, null, 2)}
+                    </div>
+                `;
+
+                console.log('✅ 응답 데이터:', data);
+            } catch (error) {
+                const responseTime = Date.now() - startTime;
+                console.error('❌ 에러:', error);
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>${url}</strong>
+                        <span class="status error">ERROR</span>
+                        <span class="status success">${responseTime}ms</span>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testAISearch(query, resultId) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.innerHTML = '<div class="result">⏳ AI 검색 중...</div>';
+
+            const startTime = Date.now();
+
+            try {
+                const response = await fetch('/api/v1/ai-search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, maxExternal: 3 })
+                });
+
+                const responseTime = Date.now() - startTime;
+                const data = await response.json();
+
+                const statusClass = response.ok ? 'success' : 'error';
+
+                resultDiv.innerHTML = `
+                    <div class="result ${statusClass}">
+                        <strong>POST /api/v1/ai-search</strong>
+                        <span class="status ${statusClass}">${response.status}</span>
+                        <span class="status success">${responseTime}ms</span>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        <strong>쿼리:</strong> ${query}
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        ${JSON.stringify(data, null, 2)}
+                    </div>
+                `;
+            } catch (error) {
+                const responseTime = Date.now() - startTime;
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>POST /api/v1/ai-search</strong>
+                        <span class="status error">ERROR</span>
+                        <span class="status success">${responseTime}ms</span>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testAISearchDetail(query, resultId) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.innerHTML = '<div class="result">⏳ AI 상세 검색 중 (시간이 걸릴 수 있습니다)...</div>';
+
+            const startTime = Date.now();
+
+            try {
+                const response = await fetch('/api/v1/ai-search/detail', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, maxExternal: 3 })
+                });
+
+                const responseTime = Date.now() - startTime;
+                const data = await response.json();
+
+                const statusClass = response.ok ? 'success' : 'error';
+
+                resultDiv.innerHTML = `
+                    <div class="result ${statusClass}">
+                        <strong>POST /api/v1/ai-search/detail</strong>
+                        <span class="status ${statusClass}">${response.status}</span>
+                        <span class="status success">${responseTime}ms</span>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        <strong>쿼리:</strong> ${query}
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        ${JSON.stringify(data, null, 2)}
+                    </div>
+                `;
+            } catch (error) {
+                const responseTime = Date.now() - startTime;
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>POST /api/v1/ai-search/detail</strong>
+                        <span class="status error">ERROR</span>
+                        <span class="status success">${responseTime}ms</span>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        async function testSummarize(resultId) {
+            const resultDiv = document.getElementById(resultId);
+            resultDiv.innerHTML = '<div class="result">⏳ 텍스트 요약 중...</div>';
+
+            const sampleText = "서산시는 충청남도 서북부에 위치한 도시로, 해미읍성과 같은 역사적 명소가 있습니다. 최근 서산시는 스마트 도시 구축을 위해 다양한 사업을 추진하고 있으며, 주민들의 편의를 위한 복지 정책도 강화하고 있습니다. 또한 대산읍은 석유화학단지로 유명하며, 지역 경제에 큰 기여를 하고 있습니다.";
+
+            const startTime = Date.now();
+
+            try {
+                const response = await fetch('/flask/summarize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: sampleText })
+                });
+
+                const responseTime = Date.now() - startTime;
+                const data = await response.json();
+
+                const statusClass = response.ok ? 'success' : 'error';
+
+                resultDiv.innerHTML = `
+                    <div class="result ${statusClass}">
+                        <strong>POST /flask/summarize</strong>
+                        <span class="status ${statusClass}">${response.status}</span>
+                        <span class="status success">${responseTime}ms</span>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        <strong>원본:</strong> ${sampleText}
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        ${JSON.stringify(data, null, 2)}
+                    </div>
+                `;
+            } catch (error) {
+                const responseTime = Date.now() - startTime;
+                resultDiv.innerHTML = `
+                    <div class="result error">
+                        <strong>POST /flask/summarize</strong>
+                        <span class="status error">ERROR</span>
+                        <span class="status success">${responseTime}ms</span>
+                        <hr style="margin: 10px 0; border: none; border-top: 1px solid #ddd;">
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function clearResult(resultId) {
+            document.getElementById(resultId).innerHTML = '';
+        }
+    </script>
+</body>
+</html>
+
