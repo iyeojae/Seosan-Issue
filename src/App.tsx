@@ -14,6 +14,7 @@ const AiSearchPage = lazy(() => import('./pages/AiSearchPage'));
 const AuthSelectionPage = lazy(() => import('./pages/AuthSelectionPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
+const MyPage = lazy(() => import('./pages/MyPage'));
 const Footer = lazy(() => import('./components/Footer'));
 // @ts-ignore
 const TestNaverAPI = lazy(() => import('./TestNaverAPI'));
@@ -44,6 +45,7 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/explore" element={<ExplorePage />} />
                       <Route path="/ai-search" element={<AiSearchPage />} />
+                      <Route path="/mypage" element={<MyPage />} />
                       <Route path="/test-naver" element={<TestNaverAPI />} />
                       <Route path="/api-test" element={<ApiTest />} />
                       <Route path="/api-status" element={<ApiStatusCheck />} />

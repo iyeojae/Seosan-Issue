@@ -61,9 +61,21 @@ async function fetchAPI(endpoint, options = {}) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
+    // 204 No Content 또는 빈 응답 처리
+    if (response.status === 204) {
+      console.log('✅ API 성공 (No Content):', { url });
+      return null;
+    }
+
     // 응답 본문을 텍스트로 먼저 읽어서 확인
     const text = await response.text();
     console.log('📄 응답 본문 (처음 200자):', text.substring(0, 200));
+
+    // 빈 응답 처리
+    if (!text || text.trim() === '') {
+      console.log('✅ API 성공 (Empty Response):', { url });
+      return null;
+    }
 
     // JSON 파싱 시도
     try {
@@ -446,6 +458,33 @@ export const usersAPI = {
   deleteMe: async (accessToken) => {
     return fetchAPI('/users/me', {
       method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+  },
+
+  // 내가 북마크한 게시글 조회
+  getMyBookmarks: async (accessToken, page = 0, size = 10) => {
+    return fetchAPI(`/users/me/bookmarks?page=${page}&size=${size}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+  },
+
+  // 내가 좋아요한 게시글 조회
+  getMyLikes: async (accessToken, page = 0, size = 10) => {
+    return fetchAPI(`/users/me/likes?page=${page}&size=${size}`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+  },
+
+  // 내가 작성한 댓글 조회
+  getMyComments: async (accessToken, page = 0, size = 10) => {
+    return fetchAPI(`/users/me/comments?page=${page}&size=${size}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }

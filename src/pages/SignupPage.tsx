@@ -1,30 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usersAPI } from '../api/backend.api';
 import './SignupPage.css';
 
 interface SignupFormData {
-  name: string;
+  nickname: string;  // 명세서에 맞게 nickname 사용
   email: string;
   password: string;
   passwordConfirm: string;
-  phone: string;
   agreeTerms: boolean;
   agreePrivacy: boolean;
+}
+
+interface SignupResponse {
+  userId: number;
+  email: string;
+  nickname: string;
 }
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<SignupFormData>({
-    name: '',
+    nickname: '',
     email: '',
     password: '',
     passwordConfirm: '',
-    phone: '',
     agreeTerms: false,
     agreePrivacy: false
   });
   const [errors, setErrors] = useState<Partial<Record<keyof SignupFormData, string>>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string>('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -39,41 +45,45 @@ const SignupPage: React.FC = () => {
         [name]: ''
       }));
     }
+    if (apiError) {
+      setApiError('');
+    }
   };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof SignupFormData, string>> = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = '이름을 입력해주세요.';
+    // 닉네임 검증 (2자 이상 50자 이하)
+    if (!formData.nickname.trim()) {
+      newErrors.nickname = '닉네임을 입력해주세요.';
+    } else if (formData.nickname.length < 2) {
+      newErrors.nickname = '닉네임은 2자 이상이어야 합니다.';
+    } else if (formData.nickname.length > 50) {
+      newErrors.nickname = '닉네임은 50자 이하여야 합니다.';
     }
 
+    // 이메일 검증 (필수, 이메일 형식)
     if (!formData.email) {
       newErrors.email = '이메일을 입력해주세요.';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = '올바른 이메일 형식이 아닙니다.';
     }
 
+    // 비밀번호 검증 (최소 8자 이상)
     if (!formData.password) {
       newErrors.password = '비밀번호를 입력해주세요.';
     } else if (formData.password.length < 8) {
       newErrors.password = '비밀번호는 8자 이상이어야 합니다.';
-    } else if (!/(?=.*[a-z])(?=.*[0-9])/.test(formData.password)) {
-      newErrors.password = '비밀번호는 영문과 숫자를 포함해야 합니다.';
     }
 
+    // 비밀번호 확인
     if (!formData.passwordConfirm) {
       newErrors.passwordConfirm = '비밀번호 확인을 입력해주세요.';
     } else if (formData.password !== formData.passwordConfirm) {
       newErrors.passwordConfirm = '비밀번호가 일치하지 않습니다.';
     }
 
-    if (!formData.phone) {
-      newErrors.phone = '전화번호를 입력해주세요.';
-    } else if (!/^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/.test(formData.phone)) {
-      newErrors.phone = '올바른 전화번호 형식이 아닙니다.';
-    }
-
+    // 약관 동의
     if (!formData.agreeTerms) {
       newErrors.agreeTerms = '이용약관에 동의해주세요.';
     }
@@ -94,21 +104,40 @@ const SignupPage: React.FC = () => {
     }
 
     setIsLoading(true);
+    setApiError('');
 
     try {
-      // TODO: API 연동
-      // const response = await signupAPI(formData);
+      console.log('📝 회원가입 시도:', {
+        email: formData.email,
+        nickname: formData.nickname
+      });
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // API 호출 (명세서에 맞게 email, password, nickname만 전송)
+      const response: SignupResponse = await usersAPI.signup(
+        formData.email,
+        formData.password,
+        formData.nickname
+      );
 
-      console.log('회원가입 데이터:', formData);
+      console.log('✅ 회원가입 성공:', response);
 
-      // 회원가입 성공 시 로그인 페이지로 이동
-      alert('회원가입이 완료되었습니다!');
+      // 회원가입 성공 메시지
+      alert(`회원가입 성공! 🎉\n환영합니다, ${response.nickname}님!`);
+
+      // 로그인 페이지로 이동
       navigate('/login');
-    } catch (error) {
-      console.error('회원가입 에러:', error);
-      setErrors({ email: '회원가입에 실패했습니다. 다시 시도해주세요.' });
+    } catch (error: any) {
+      console.error('❌ 회원가입 에러:', error);
+
+      if (error.message?.includes('409') || error.message?.includes('Conflict')) {
+        setApiError('이미 사용 중인 이메일입니다.');
+      } else if (error.message?.includes('400')) {
+        setApiError('입력한 정보가 올바르지 않습니다. 다시 확인해주세요.');
+      } else if (error.message?.includes('Network')) {
+        setApiError('서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        setApiError('회원가입에 실패했습니다. 다시 시도해주세요.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -134,21 +163,38 @@ const SignupPage: React.FC = () => {
         </div>
 
         <form className="signup-form" onSubmit={handleSubmit}>
+          {/* API 에러 메시지 표시 */}
+          {apiError && (
+            <div className="api-error-message" style={{
+              backgroundColor: '#fee',
+              border: '1px solid #fcc',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              marginBottom: '20px',
+              color: '#c33',
+              fontSize: '14px'
+            }}>
+              ⚠️ {apiError}
+            </div>
+          )}
+
           <div className="form-group">
-            <label htmlFor="name" className="form-label">
-              이름 <span className="required">*</span>
+            <label htmlFor="nickname" className="form-label">
+              닉네임 <span className="required">*</span>
             </label>
             <input
               type="text"
-              id="name"
-              name="name"
-              className={`form-input ${errors.name ? 'input-error' : ''}`}
-              placeholder="이름을 입력하세요"
-              value={formData.name}
+              id="nickname"
+              name="nickname"
+              className={`form-input ${errors.nickname ? 'input-error' : ''}`}
+              placeholder="닉네임을 입력하세요 (2-50자)"
+              value={formData.nickname}
               onChange={handleInputChange}
               disabled={isLoading}
+              minLength={2}
+              maxLength={50}
             />
-            {errors.name && <span className="error-message">{errors.name}</span>}
+            {errors.nickname && <span className="error-message">{errors.nickname}</span>}
           </div>
 
           <div className="form-group">
@@ -169,23 +215,6 @@ const SignupPage: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="phone" className="form-label">
-              전화번호 <span className="required">*</span>
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              className={`form-input ${errors.phone ? 'input-error' : ''}`}
-              placeholder="010-1234-5678"
-              value={formData.phone}
-              onChange={handleInputChange}
-              disabled={isLoading}
-            />
-            {errors.phone && <span className="error-message">{errors.phone}</span>}
-          </div>
-
-          <div className="form-group">
             <label htmlFor="password" className="form-label">
               비밀번호 <span className="required">*</span>
             </label>
@@ -194,10 +223,11 @@ const SignupPage: React.FC = () => {
               id="password"
               name="password"
               className={`form-input ${errors.password ? 'input-error' : ''}`}
-              placeholder="영문, 숫자 포함 8자 이상"
+              placeholder="8자 이상 입력하세요"
               value={formData.password}
               onChange={handleInputChange}
               disabled={isLoading}
+              minLength={8}
             />
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>

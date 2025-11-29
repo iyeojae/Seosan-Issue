@@ -10,6 +10,10 @@ import { useSearchParams, useLocation } from "react-router-dom";
 import styles from "./ExplorePremium.module.css";
 import { seosanAPI, welfareAPI, cultureAPI, naverSearchAPI } from "../../api/backend.api";
 
+/* ===== 댓글 & 좋아요/북마크 컴포넌트 ===== */
+import Comments from '../Comments';
+import LikeBookmark from '../LikeBookmark';
+
 /* ===== 이미지 ===== */
 import newslogo from "../../assets/newslogo.png";
 import chainIcon from "../../assets/chain.png";
@@ -456,6 +460,24 @@ function DetailView({
           </span>
         </button>
       </nav>
+
+      {/* ===== 좋아요/북마크 & 댓글 섹션 ===== */}
+      {itemId && typeof itemId === 'number' && (
+        <div style={{
+          marginTop: '40px',
+          borderTop: '2px solid #e5e7eb',
+          paddingTop: '40px'
+        }}>
+          <div style={{
+            marginBottom: '32px',
+            display: 'flex',
+            justifyContent: 'center'
+          }}>
+            <LikeBookmark postId={itemId} />
+          </div>
+          <Comments postId={itemId} />
+        </div>
+      )}
     </>
   );
 }

@@ -2,10 +2,13 @@ import "./Header.css";
 import { useState, useEffect } from "react";
 import Logo from '../assets/logo.png';
 import { Link, useLocation } from "react-router-dom";
+import { isAuthenticated, getUserInfo } from '../utils/auth';
 
 export default function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isLoggedIn = isAuthenticated();
+  const userInfo = getUserInfo();
 
   const menuList = [
     { name: "메인", path: "/" },
@@ -54,6 +57,22 @@ export default function Header() {
           ))}
         </nav>
 
+        {/* 로그인/사용자 정보 버튼 */}
+        <div className="header-auth-section desktop-auth">
+          {isLoggedIn ? (
+            <Link to="/mypage" className="header-user-btn">
+              <div className="header-user-avatar">
+                {userInfo?.nickname?.[0]?.toUpperCase() || '?'}
+              </div>
+              <span className="header-user-name">{userInfo?.nickname || '사용자'}</span>
+            </Link>
+          ) : (
+            <Link to="/login" className="header-login-btn">
+              로그인
+            </Link>
+          )}
+        </div>
+
         {/* 모바일 메뉴 버튼 */}
         <button 
           className="mobile-menu-btn"
@@ -86,6 +105,20 @@ export default function Header() {
             ✕
           </button>
         </div>
+
+        {/* 모바일 사용자 정보 */}
+        {isLoggedIn && (
+          <div className="mobile-user-info">
+            <div className="mobile-user-avatar">
+              {userInfo?.nickname?.[0]?.toUpperCase() || '?'}
+            </div>
+            <div className="mobile-user-details">
+              <div className="mobile-user-name">{userInfo?.nickname || '사용자'}</div>
+              <div className="mobile-user-email">{userInfo?.email || ''}</div>
+            </div>
+          </div>
+        )}
+
         <div className="mobile-nav-items">
           {menuList.map(menu => (
             <Link
@@ -97,6 +130,25 @@ export default function Header() {
               {menu.name}
             </Link>
           ))}
+
+          {/* 모바일 로그인/마이페이지 버튼 */}
+          {isLoggedIn ? (
+            <Link
+              to="/mypage"
+              className="mobile-nav-link"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              마이페이지
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="mobile-nav-link mobile-login-link"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              로그인
+            </Link>
+          )}
         </div>
       </nav>
     </>

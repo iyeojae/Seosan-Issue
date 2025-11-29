@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usersAPI } from '../api/backend.api';
+import { saveTokens, saveUserInfo } from '../utils/auth';
 import './LoginPage.css';
 
 interface LoginFormData {
   email: string;
   password: string;
+}
+
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
 }
 
 const LoginPage: React.FC = () => {
@@ -15,6 +23,7 @@ const LoginPage: React.FC = () => {
   });
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string>('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,6 +38,9 @@ const LoginPage: React.FC = () => {
         [name]: ''
       }));
     }
+    if (apiError) {
+      setApiError('');
+    }
   };
 
   const validateForm = (): boolean => {
@@ -42,8 +54,8 @@ const LoginPage: React.FC = () => {
 
     if (!formData.password) {
       newErrors.password = '비밀번호를 입력해주세요.';
-    } else if (formData.password.length < 6) {
-      newErrors.password = '비밀번호는 6자 이상이어야 합니다.';
+    } else if (formData.password.length < 8) {
+      newErrors.password = '비밀번호는 8자 이상이어야 합니다.';
     }
 
     setErrors(newErrors);
@@ -58,21 +70,45 @@ const LoginPage: React.FC = () => {
     }
 
     setIsLoading(true);
+    setApiError('');
 
     try {
-      // TODO: API 연동
-      // const response = await loginAPI(formData);
+      console.log('🔐 로그인 시도:', { email: formData.email });
 
-      // 임시 로그인 로직 (2초 딜레이)
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // API 호출
+      const response: LoginResponse = await usersAPI.login(formData.email, formData.password);
 
-      console.log('로그인 데이터:', formData);
+      console.log('✅ 로그인 성공:', response);
 
-      // 로그인 성공 시 메인 페이지로 이동
+      // 토큰 저장 (auth 유틸리티 사용)
+      saveTokens(response.accessToken, response.refreshToken, response.tokenType);
+
+      // 사용자 정보 조회 (선택사항)
+      try {
+        const userInfo = await usersAPI.getMe(response.accessToken);
+        saveUserInfo(userInfo);
+        console.log('✅ 사용자 정보:', userInfo);
+      } catch (error) {
+        console.warn('⚠️ 사용자 정보 조회 실패 (로그인은 성공):', error);
+      }
+
+      // 로그인 성공 메시지
+      alert('로그인 성공! 환영합니다 🎉');
+
+      // 메인 페이지로 이동
       navigate('/');
-    } catch (error) {
-      console.error('로그인 에러:', error);
-      setErrors({ email: '로그인에 실패했습니다. 다시 시도해주세요.' });
+    } catch (error: any) {
+      console.error('❌ 로그인 에러:', error);
+
+      if (error.message?.includes('401')) {
+        setApiError('이메일 또는 비밀번호가 일치하지 않습니다.');
+      } else if (error.message?.includes('403')) {
+        setApiError('계정이 비활성화되었습니다. 관리자에게 문의하세요.');
+      } else if (error.message?.includes('Network')) {
+        setApiError('서버와 연결할 수 없습니다. 잠시 후 다시 시도해주세요.');
+      } else {
+        setApiError('로그인에 실패했습니다. 다시 시도해주세요.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -98,6 +134,21 @@ const LoginPage: React.FC = () => {
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
+          {/* API 에러 메시지 표시 */}
+          {apiError && (
+            <div className="api-error-message" style={{
+              backgroundColor: '#fee',
+              border: '1px solid #fcc',
+              borderRadius: '8px',
+              padding: '12px 16px',
+              marginBottom: '20px',
+              color: '#c33',
+              fontSize: '14px'
+            }}>
+              ⚠️ {apiError}
+            </div>
+          )}
+
           <div className="form-group">
             <label htmlFor="email" className="form-label">
               이메일

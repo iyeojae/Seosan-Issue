@@ -1,0 +1,119 @@
+.like-bookmark-container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-btn:hover:not(:disabled) {
+  border-color: #667eea;
+  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-icon {
+  width: 20px;
+  height: 20px;
+  transition: all 0.2s;
+}
+
+.action-text {
+  font-size: 14px;
+}
+
+/* 좋아요 활성화 상태 */
+.like-btn.active {
+  border-color: #ef4444;
+  background: #fee;
+  color: #ef4444;
+}
+
+.like-btn.active .action-icon {
+  fill: #ef4444;
+  stroke: #ef4444;
+  animation: heartBeat 0.3s ease;
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.like-btn:hover:not(:disabled) {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* 북마크 활성화 상태 */
+.bookmark-btn.active {
+  border-color: #f59e0b;
+  background: #fef3c7;
+  color: #f59e0b;
+}
+
+.bookmark-btn.active .action-icon {
+  fill: #f59e0b;
+  stroke: #f59e0b;
+  animation: bookmarkSave 0.3s ease;
+}
+
+@keyframes bookmarkSave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.bookmark-btn:hover:not(:disabled) {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .like-bookmark-container {
+    width: 100%;
+  }
+
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+
+  .action-text {
+    font-size: 13px;
+  }
+
+  .action-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
